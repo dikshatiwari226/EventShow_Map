@@ -7,6 +7,9 @@ class EventsController < ApplicationController
 
   # GET /events
   # GET /events.json
+  #
+
+  
 
   # => Events direction details GET /events/:id/allevent_details
   
@@ -84,6 +87,26 @@ class EventsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+
+  def generate_ical
+    cal = Icalendar::Calendar.new
+    @events.find_each do |eventcal|
+      # create the event for this tool
+      event = Icalendar::Event.new
+      event.start = eventcal.start_date.strftime("%Y%m%dT%H%M%S")
+      event.end = eventcal.end_date.strftime("%Y%m%dT%H%M%S")
+      event.summary = eventcal.title if eventcal.title
+      # event.uid = eventcal_url(eventcal)
+      
+      # insert the event into the calendar
+      cal.add event
+    end
+    
+    # return the calendar as a string
+    cal.to_ical
+  end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
